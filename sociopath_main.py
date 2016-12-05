@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
 from selenium import webdriver
 from browsermobproxy import Server
 from urllib.parse import urlparse
@@ -44,10 +46,10 @@ driver.get(URL_TO_PARSE)
 
 har = proxy.har
 
-for ent in proxy.har['log']['entries']:
-    print(ent['request']['url'])
-    print(ent['response']['content'])
-    print('\n')
+# for ent in proxy.har['log']['entries']:
+#     print(ent['request']['url'])
+#     print(ent['response']['content'])
+#     print('\n')
 
 driver.save_screenshot('screen.png')
 driver.execute_script(js_emb.get_xpath_by_xy, 100, 100)
@@ -55,7 +57,39 @@ driver.execute_script(js_emb.get_xpath_by_xy, 100, 100)
 # ==============
 # FINISH
 
+
+
+# ==============
+# BOILERPIPE
+# ==============
+
+from boilerpipe.extract import Extractor
+
+extractor = Extractor(extractor='DefaultExtractor', url="http://en.wikipedia.org/wiki/Main_Page")
+pass
+# extractor.getText()
+text_blocks = extractor.source.getTextBlocks()
+
+i = 0
+while True:
+    print(text_blocks.get(i).toString() + '\n')
+    i += 1
+
+
+
+# # ==============
+# # SD algorithm https://github.com/nik0spapp/sdalg
+# # ==============
+import sd_algorithm
+
+
+sd = sd_algorithm.SDAlgorithm()
+sd.url = URL_TO_PARSE
+sd.analyze_page()
+
+# ============
+# jVIPS https://github.com/asanoja/segmentations/tree/master/algoimpl/src/jVIPS
+# ============
+
 proxy.close()
 driver.quit()
-
-pass
