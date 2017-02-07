@@ -1,5 +1,4 @@
 class JSCodeEmbedder():
-
     @property
     def get_xpath_by_xy(self):
         """
@@ -13,7 +12,7 @@ class JSCodeEmbedder():
 
         :return:
         """
-        javascript_code = """
+        return """
         function getPathTo(element) {
             if (element.id!=='')
                 return 'id("'+element.id+'")';
@@ -34,5 +33,3 @@ class JSCodeEmbedder():
         var element = document.elementFromPoint(arguments[0], arguments[1]);
         return getPathTo(element);
         """
-
-        return javascript_code
