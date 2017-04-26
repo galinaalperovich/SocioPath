@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-from selenium import webdriver
-from browsermobproxy import Server
 from urllib.parse import urlparse
-from javascript_functions import JSCodeEmbedder
+
+from browsermobproxy import Server
+from selenium import webdriver
+from parser.javascript_functions import *
 
 # ==============
 # SETTINGS
@@ -40,8 +39,6 @@ proxy.new_har()
 driver = webdriver.PhantomJS(executable_path=path_to_phantomjs,
                              service_args=get_service_args(proxy.proxy))
 
-js_emb = JSCodeEmbedder()
-
 driver.get(URL_TO_PARSE)
 
 har = proxy.har
@@ -52,7 +49,7 @@ har = proxy.har
 #     print('\n')
 
 driver.save_screenshot('screen.png')
-driver.execute_script(js_emb.get_xpath_by_xy, 100, 100)
+driver.execute_script(get_xpath_by_xy, 100, 100)
 
 # ==============
 # FINISH
@@ -70,26 +67,19 @@ pass
 # extractor.getText()
 text_blocks = extractor.source.getTextBlocks()
 
-i = 0
-while True:
+n = text_blocks.size()
+
+for i in range(n):
     print(text_blocks.get(i).toString() + '\n')
-    i += 1
+
+# ==============
+# SD algorithm https://github.com/nik0spapp/sdalg
+# ==============
 
 
-
-# # ==============
-# # SD algorithm https://github.com/nik0spapp/sdalg
-# # ==============
-import sd_algorithm
-
-
-sd = sd_algorithm.SDAlgorithm()
-sd.url = URL_TO_PARSE
-sd.analyze_page()
-
-# ============
-# jVIPS https://github.com/asanoja/segmentations/tree/master/algoimpl/src/jVIPS
-# ============
-
+# sd = SDAlgorithm()
+# sd.url = URL_TO_PARSE
+# sd.analyze_page()
+#
 proxy.close()
 driver.quit()
