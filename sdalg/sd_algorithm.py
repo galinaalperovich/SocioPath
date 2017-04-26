@@ -16,11 +16,10 @@ import re
 import sys
 import urllib.request
 
+from external_algorithms.terminal_colors import Tcolors
 from lxml import html
 from lxml.html.clean import Cleaner
-
 from region import Region
-from terminal_colors import Tcolors
 
 VALID_TAGS = ['div','td','span','p','form','dd','dt','li', 'nobr']
 STRONG_TAGS = ['div','td','dd','dt','li']
@@ -30,8 +29,8 @@ TAGS = ['a','img','strong','b','i','br','script','style',
 ARGS = {'meta':False, 'safe_attrs_only':False, 'page_structure':False,
        'scripts':True, 'style':True, 'links':True, 'remove_tags':TAGS}
 
-T1 = 50 # max density region distance threshold
-T2 = 30 # min region density threshold
+T1 = 60 # max density region distance threshold
+T2 = 20 # min region density threshold
 
 
 class SDAlgorithm():
@@ -49,8 +48,8 @@ class SDAlgorithm():
 
         print("[*] Create DOM tree...")
         tree = self.construct_page_tree()
-        node = tree.getroot()
-        self.cross_tree(node)
+        root_node = tree.getroot()
+        self.cross_tree(root_node)
         print("[*] Calculating initial groups...")
 
         print("[*] Merging groups...")
@@ -81,8 +80,11 @@ class SDAlgorithm():
         Downloads the HTML page given the URL and creates the DOM page tree.
         Only the nodes that are useful for the segmentation are kept.
         """
+
         page = urllib.request.urlopen(self.url)
         html_body = page.read()
+        # req = Request(self.url, headers={'User-Agent': 'Mozilla/5.0'})
+        # html_body = urlopen(req).read()
         doc = html.fromstring(html_body)
         cleaner = Cleaner(**ARGS)
         try:
@@ -443,7 +445,13 @@ class SDAlgorithm():
         """
         tmp_nodes = copy.copy(self.valid_nodes)
         for group in tmp_nodes:
-            node = tree.xpath(group)[0]
+            node_list = tree.xpath(group.lower())
+
+            if node_list:
+                node = node_list[0]
+            else:
+                continue
+
             parent = node.getparent()
             if parent is not None:
                 parent_path = self.get_path(parent)

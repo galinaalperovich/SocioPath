@@ -15,7 +15,8 @@
 ####################################################################
 
 import re
-from terminal_colors import Tcolors
+
+from external_algorithms.terminal_colors import Tcolors
 from lxml.html import HtmlComment
 
 
