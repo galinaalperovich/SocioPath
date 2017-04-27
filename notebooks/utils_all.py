@@ -106,12 +106,18 @@ def perform_analysis_tsne(field_name, clf, data):
     
 def perform_analysis_of_field2(field_name, clf, data, clean=False):
     # choose field and no_field for negative examples and clean
+    perform_analysis(field_name, clf, data)
+    draw_feature_importance(clf, X_train, field_name)
+# In[ ]:
+
+def perform_analysis(field_name, clf, data, clean=False):
+    # choose field and no_field for negative examples and clean
     df_pos = clean_df(data[data['meta_name'] == field_name])
     df_neg = clean_df(data[data['meta_name'] != field_name])
     X, y, real_meta, tag_le = get_XY(df_pos, df_neg, 'no_' + field_name)
     X = X[['x_coords','y_coords','block_height','block_width',
            'num_siblings', 'num_punctuation', 'num_digits',
-          'digits_share', 'num_upper', 'num_upper']]
+          'digits_share', 'num_upper']]
     X['y'] = y
     X = X.convert_objects(convert_numeric=True).dropna()
     y = X['y']
@@ -119,8 +125,7 @@ def perform_analysis_of_field2(field_name, clf, data, clean=False):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=7)
     clf.fit(X_train, y_train)
     print("train: {}, test: {}".format(clf.score(X_train, y_train), clf.score(X_test, y_test)))
-    draw_feature_importance(clf, X_train, field_name)
-# In[ ]:
+    return clf
 
 
 
