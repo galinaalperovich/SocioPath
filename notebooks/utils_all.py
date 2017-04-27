@@ -1,4 +1,3 @@
-
 # coding: utf-8
 
 # In[16]:
@@ -10,13 +9,10 @@ warnings.filterwarnings('ignore')
 # In[17]:
 
 from sklearn.cross_validation import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 
 import pandas as pd
 import numpy as np
-import os
-
 
 # In[18]:
 
@@ -26,10 +22,12 @@ import matplotlib.pyplot as plt
 # In[19]:
 
 def clean_df(df):
-    new_df = df.drop_duplicates()
+    new_df = df.drop_duplicates(subset=['meta_name','x_coords','y_coords', 'block_height', 'block_width'])
     new_df = new_df[new_df['tag'] != 'meta']
-    #new_df = new_df[new_df['x_coords'] != '0']
     new_df = new_df[new_df['x_coords'] != 0]
+    new_df = new_df[new_df['block_height'] != 0]
+    new_df = new_df[new_df['block_width'] != 0]
+    new_df.url = new_df.url.apply(lambda x: x.replace('\n',''))
     return new_df
 
 
@@ -105,12 +103,26 @@ def perform_analysis_tsne(field_name, clf, data):
     print("train: {}, test: {}".format(clf.score(X_train, y_train), clf.score(X_test, y_test)))
     draw_feature_importance(clf, X_train, field_name)
 
+    
+def perform_analysis_of_field2(field_name, clf, data, clean=False):
+    # choose field and no_field for negative examples and clean
+    df_pos = clean_df(data[data['meta_name'] == field_name])
+    df_neg = clean_df(data[data['meta_name'] != field_name])
+    X, y, real_meta, tag_le = get_XY(df_pos, df_neg, 'no_' + field_name)
+    X = X[['x_coords','y_coords','block_height','block_width',
+           'num_siblings', 'num_punctuation', 'num_digits',
+          'digits_share', 'num_upper', 'num_upper']]
+    X['y'] = y
+    X = X.convert_objects(convert_numeric=True).dropna()
+    y = X['y']
+    X = X.drop('y', 1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=7)
+    clf.fit(X_train, y_train)
+    print("train: {}, test: {}".format(clf.score(X_train, y_train), clf.score(X_test, y_test)))
+    draw_feature_importance(clf, X_train, field_name)
 # In[ ]:
 
 
 
 
 # In[ ]:
-
-
-

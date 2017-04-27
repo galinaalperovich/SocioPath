@@ -1,13 +1,15 @@
 
 # coding: utf-8
 
-# In[31]:
+# First look at the data, comparing feature importance from RandomForest classifier
+
+# In[13]:
 
 import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[32]:
+# In[14]:
 
 from utils_all import *
 
@@ -22,38 +24,73 @@ import os
 import matplotlib.pyplot as plt
 
 
-# In[33]:
+# In[28]:
 
-get_ipython().magic('store -r data')
+get_ipython().magic('store -r df_1_final')
 
 
-# In[34]:
+# In[29]:
+
+data = df_1_final
+
+
+# In[30]:
 
 css_prop = data.iloc[:,9:]
 
 
-# In[35]:
+# In[31]:
+
+data_cl = clean_df(data)
+
+
+# In[32]:
+
+data_cl.shape
+
+
+# In[33]:
+
+data_cl.url.unique().shape
+
+
+# In[34]:
 
 forest = RandomForestClassifier(n_estimators=100)
 perform_analysis_of_field('name', forest, data)
 
 
-# In[36]:
+# In[ ]:
+
+
+
+
+# In[35]:
 
 forest = RandomForestClassifier(n_estimators=100)
 perform_analysis_of_field('startDate', forest, data)
 
 
-# In[37]:
+# In[36]:
 
 forest = RandomForestClassifier(n_estimators=100)
 perform_analysis_of_field('location', forest, data)
 
 
-# In[38]:
+# In[37]:
 
 forest = RandomForestClassifier(n_estimators=100)
 perform_analysis_of_field('description', forest, data)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
 
 # In[ ]:

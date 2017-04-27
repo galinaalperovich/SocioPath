@@ -1,32 +1,32 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
+# In[3]:
 
 import matplotlib.pyplot as plt
 
 
-# In[3]:
+# In[4]:
 
 import pandas as pd
 import numpy as np
 import os
 
 
-# In[4]:
+# In[5]:
 
 from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
 
-# In[5]:
+# In[6]:
 
 import paramiko
 
@@ -61,17 +61,18 @@ load_remote_data()
 # ### Data loading and first cleaning
 # 
 
-# In[9]:
+# In[8]:
 
 # DATA_PATH = '/Users/jetbrains/Yandex.Disk.localized/Diploma/data_parsed/'
-DATA_PATH_REMOTE = 'data_parsed/'
+DIR = '/Users/jetbrains/Yandex.Disk.localized/Diploma/DATA_DIPLOMA'
+DATA_PATH_REMOTE = DIR + '/data_parsed/'
 # files = os.listdir(DATA_PATH)[1:]
 files_remote = os.listdir(DATA_PATH_REMOTE)[1:]
 
 
-# In[10]:
+# In[9]:
 
-with open("DATA.csv", "wb") as outfile:
+with open(DIR + "/DATA.csv", "wb") as outfile:
 #     for f in files:
 #         with open(DATA_PATH + f, "rb") as infile:
 #             outfile.write(infile.read())
@@ -82,7 +83,7 @@ with open("DATA.csv", "wb") as outfile:
 
 # In[11]:
 
-data_from_many = pd.read_csv('DATA.csv', delimiter='\t')
+data_from_many = pd.read_csv(DIR + '/DATA.csv', delimiter='\t')
 
 
 # In[12]:

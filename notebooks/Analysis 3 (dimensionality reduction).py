@@ -21,29 +21,29 @@ from sklearn import (manifold, datasets, decomposition, ensemble,
                      discriminant_analysis, random_projection)
 
 
-# In[1]:
+# In[26]:
 
 get_ipython().magic('store -r data')
 get_ipython().magic('store -r data_t')
 get_ipython().magic('store -r df_1_final')
 
 
-# In[2]:
+# In[27]:
 
 data_t
 
 
-# In[3]:
+# In[28]:
 
 data = df_1_final
 
 
-# In[7]:
+# In[29]:
 
 data_cl = clean_df(data)
 
 
-# In[8]:
+# In[30]:
 
 def prepare_num_XY(data_cl, num_features):
     data_cl = data_cl.dropna(axis=0)
@@ -59,14 +59,14 @@ def prepare_num_XY(data_cl, num_features):
     return X, y, le_tag
 
 
-# In[9]:
+# In[31]:
 
 data_cl = data_cl[['meta_name','x_coords','y_coords','block_height','block_width','num_siblings', 'tag']]
 num_features = ['x_coords','y_coords','block_height','block_width','num_siblings']
 X, y, le_tag = prepare_num_XY(data_cl, num_features)
 
 
-# In[10]:
+# In[32]:
 
 def run_dim_reduction_and_draw(data, labels, model, title):
     X_model = model.fit_transform(data)
@@ -78,31 +78,49 @@ def run_dim_reduction_and_draw(data, labels, model, title):
     return X_model
 
 
-# In[12]:
+# ### Standartize features
+
+# In[33]:
+
+from sklearn.preprocessing import StandardScaler
+
+
+# In[34]:
+
+sc = StandardScaler()
+X_tr = sc.fit_transform(X)
+
+
+# In[35]:
+
+X_tr
+
+
+# In[36]:
 
 method = 't-SNE'
-perplexity=20
-learning_rate=1000.0
+perplexity=30
+learning_rate=500.0
 model = TSNE(n_components=2,
            random_state=0,
            perplexity=perplexity,
            learning_rate=learning_rate)
 title = 'Method: {}, perplexity: {}, learning_rate: {}'.format(method, perplexity, learning_rate)
-run_dim_reduction_and_draw(X, y, model, title)
+model_fit = run_dim_reduction_and_draw(X_tr, y, model, title)
 
 
-# In[14]:
+# In[38]:
 
 model = IncrementalPCA(n_components=2, batch_size=3)
 title = 'Method: PCA'
-run_dim_reduction_and_draw(X, y, model, title)
+run_dim_reduction_and_draw(X_tr, y, model, title)
 
 
-# In[16]:
+# In[40]:
 
 model = manifold.MDS(n_components=2, max_iter=100, n_init=1)
 title = 'Method: MDS'
-run_dim_reduction_and_draw(data=X, labels=y, model, title)
+run_dim_reduction_and_draw(X_tr, y, model, title)
 
 
 # Dimensionality reduction did not show clear clusters, that means that either the fieatures are not well saparable or these methods don't shoe the structure and we need more complicated methods and classifiers for the data. 
@@ -143,15 +161,6 @@ def perform_analysis_tsne(X, y, clf, field_name):
     print('{} prediction'.format(field_name))
     print("train: {}, test: {}".format(clf.score(X_train, y_train), clf.score(X_test, y_test)))
     draw_feature_importance(clf, X_train, field_name)
-
-
-# In[120]:
-
-# fields = ['location', 'name', 'description', 'startDate']
-# for field_name in fields:
-#     forest = RandomForestClassifier(n_estimators=100)
-#     X, y, real_meta = get_XY_tsne(field_name, tsne)
-#     perform_analysis_tsne(X, y, forest, field_name)
 
 
 # ### Dim reduction for X with additional text features
