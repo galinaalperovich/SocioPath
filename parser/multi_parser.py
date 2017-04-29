@@ -8,16 +8,17 @@ from multiprocessing.context import Process
 from selenium import webdriver
 
 from parser.parser_utils import get_microformat_properties_by_type, get_event_features_and_write, now
+# from parser_utils import get_microformat_properties_by_type, get_event_features_and_write, now
 
 fn = 'temp.txt'
 
 CWD = os.getcwd()
 
 # PATH_FILES = '/Users/jetbrains/Yandex.Disk.localized/Diploma/data_output'
-# PATH_PARSED_FILES = '/Users/jetbrains/Yandex.Disk.localized/Diploma/data_parsed'
 PATH_FILES = CWD + '/data_output'
-PATH_PARSED_FILES = CWD + '/data_parsed'
-path_to_phantomjs = 'phantomjs'
+path_to_phantomjs = CWD +'/phantomjs'
+PATH_PARSED_FILES = '/Users/jetbrains/Yandex.Disk.localized/Diploma/data_parsed' #LOCAL
+# PATH_PARSED_FILES = CWD + '/data_parsed' #METACENTRUM
 
 FILES_LIST = list(filter(lambda x: 'csv' in x, os.listdir(PATH_FILES)))
 TIME_OUT_LOAD = 20
@@ -59,6 +60,8 @@ def process_file(file_path_input, file_path_output, i):
         start_with_timeout(p, TIME_OUT_LOAD, "loading", url, i)
 
         event_properties = temp_queue.get() if not temp_queue.empty() else None
+        if p.is_alive():
+            p.terminate()
         if event_properties is not None:
             print("{}   Process={}  Got properties for  {}".format(now(), i, url))
 
@@ -66,8 +69,8 @@ def process_file(file_path_input, file_path_output, i):
             p_event_features = Process(target=get_event_features_and_write,
                                        args=(event_properties, driver, writer, i, output_file))
             start_with_timeout(p_event_features, TIME_OUT_FEATURE, "feature extraction", url, i)
-
-
+            if p_event_features.is_alive():
+                p.terminate()
 
     return 'done'
 
@@ -103,7 +106,8 @@ def chunkify(lst, n):
 
 def main():
     sys.stdout = open('log_print.txt', 'a')
-    num_workers = mp.cpu_count() - 1
+    #num_workers = int(mp.cpu_count()/3
+    num_workers = 1
     for i in range(num_workers):
         file_ids = get_files_for_worker(i, num_workers)
         process = Process(target=worker,

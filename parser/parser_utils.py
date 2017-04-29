@@ -41,6 +41,19 @@ def get_microformat_properties(url: str) -> dict:
         return None
 
 
+def get_all_elements(url: str) -> dict:
+    try:
+        page = urllib.request.urlopen(url)
+        if page.code == 200:
+            html_body = page.read()
+            selector = Selector(text=html_body, type="html")
+            return selector.xpath('//text()')
+        return None
+    except Exception as e:
+        print('{}   {}  {}, error {}'.format(now(), 'Problem with tree elements for URL:', url), e)
+        return None
+
+
 def get_microformat_properties_by_type(url, type, queue, i):
     print('{}   Process={}  Getting micro properties for {}'.format(now(), i, url))
     type_properties = []
@@ -56,6 +69,18 @@ def get_microformat_properties_by_type(url, type, queue, i):
         queue.put(type_properties)
     else:
         queue.put(None)
+
+
+# def get_all_tree_elements(url, queue, i):
+def get_all_tree_elements(url, i=1):
+    print('{}   Process={}  Getting all elements for {}'.format(now(), i, url))
+    all_elements = get_all_elements(url)
+
+    return all_elements
+    # if all_elements and all_elements is not None:
+    #     queue.put(all_elements)
+    # else:
+    #     queue.put(None)
 
 
 def get_event_features(properties, driver, i):
