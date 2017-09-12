@@ -1,3 +1,5 @@
+The most recent link for the project is here: https://github.com/galinaalperovich/Ms-Thesis-CVUT
+
 # SocioPath
 
 The task is to develop a framework which automatically analyses and extracts information on local event announcements (e.g., concerts, lectures, festivals, performances etc.) by means of HTML page analysis. 
